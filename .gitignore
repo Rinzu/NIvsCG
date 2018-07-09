@@ -1,0 +1,3 @@
+# exclude everything in directory datasets except readme
+    /datasets/*
+    !/datasets/README.md
