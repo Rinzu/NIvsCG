@@ -1,7 +1,3 @@
 # exclude everything in directory datasets except readme
-datasets/auth_jpeg_images_experiment/
-datasets/columbia-prcg-datasets.rar
-datasets/columbia-prcg-datasets/
-datasets/personal_columbia_downsized_jpeg.zip
-datasets/recapturedcg_images.zip
-datasets/recapturedcg_images/
+/datasets/*
+!/datasets/README.md
