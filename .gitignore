@@ -1,5 +1,5 @@
 # exclude everything in directory datasets except readme
-datasetsdatasets/auth_jpeg_images_experiment/
+datasets/auth_jpeg_images_experiment/
 datasets/columbia-prcg-datasets.rar
 datasets/columbia-prcg-datasets/
 datasets/personal_columbia_downsized_jpeg.zip
