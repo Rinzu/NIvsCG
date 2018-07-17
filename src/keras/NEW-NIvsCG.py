@@ -1,10 +1,11 @@
 from __future__ import print_function
 import keras
+from keras import backend as K
 from keras.preprocessing.image import *
 from keras.models import Sequential, load_model
 from keras.layers import Dense, Dropout, Activation, Flatten, BatchNormalization
 from keras.layers import Conv2D, MaxPooling2D
-from keras import optimizers
+from keras import optimizers, regularizers
 from time import time
 from keras.callbacks import TensorBoard, ReduceLROnPlateau, ModelCheckpoint
 
@@ -23,7 +24,7 @@ class LRTensorBoard(TensorBoard):
 model = Sequential()
 
 # convLayer
-model.add(Conv2D(32, (7, 7), input_shape=(233, 233, 3)))
+model.add(Conv2D(32, (7, 7), input_shape=(233, 233, 3), kernel_regularizer=regularizers.l1(0.01)))
 
 # C1
 model.add(Conv2D(64, (7, 7)))
@@ -53,19 +54,18 @@ model.add(Dense(4096, activation='relu'))
 model.add(Dropout(0.5))
 
 # Output
-model.add(Dense(1))
-model.add(Activation('sigmoid'))
+model.add(Dense(2, activation='softmax'))
 
 # optimizer
 adam = optimizers.Adam(lr=1e-5)
 
-# loss function is binary crossentropy (goof for binary classification)
-model.compile(loss='binary_crossentropy',
+# loss function is binary crossentropy (for binary classification)
+model.compile(loss='sparse_categorical_crossentropy',
               optimizer=adam,
               metrics=['accuracy'])
 
 # make the data generators for image data
-batch_size = 8
+batch_size = 1
 
 train_datagen = ImageDataGenerator()
 test_datagen = ImageDataGenerator()
@@ -84,8 +84,8 @@ validation_generator = test_datagen.flow_from_directory(
 
 # make callbacks to use while training
 tensorboard = LRTensorBoard(log_dir="logs/{}".format(time()))
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=1e-8)
-checkpoint = ModelCheckpoint("../../checkpoints/weights.{epoch:02d}-{val_loss:.2f}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=5)
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0)
+checkpoint = ModelCheckpoint("../../checkpoints/model.{epoch:02d}-{val_loss:.2f}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=3)
 
 # load trained model with 250 epochs, remove this line if training from scratch
 # model.load_weights('NIvsCG_model_250_epochs.h5')
@@ -93,11 +93,11 @@ checkpoint = ModelCheckpoint("../../checkpoints/weights.{epoch:02d}-{val_loss:.2
 # start training
 model.fit_generator(
         train_generator,
-        steps_per_epoch=20000,
-        epochs=250,
+        steps_per_epoch=2000,
+        epochs=20,
         validation_data=validation_generator,
-        validation_steps=5000,
+        validation_steps=500,
         callbacks=[tensorboard, reduce_lr, checkpoint])
 
 # save the weights if ever finish
-model.save_weights('NIvsCG_model_500_epochs.h5') 
+model.save('NIvsCG_model_1_20epochs_2000-500step.h5') 

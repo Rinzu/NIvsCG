@@ -14,8 +14,8 @@ rng('shuffle');  % used for randi
 mainDir =  "C:\Users\jalouam\Desktop\ML\NIvsCG\datasets\"
 subDirs = ["personal"; "PRCG"]
 
-test_freq = 5;  %how often to use an image as a validation image. every 5th
-valid_freq = 6; %6th image
+test_freq = 4;  %how often to use an image as a validation image. every 5th
+valid_freq = 5; %6th image
 
 for i = 1:2
     files = dir(strcat(mainDir, 'full\', subDirs{i})) %get all the image files in the directory 
@@ -38,8 +38,7 @@ for i = 1:2
             image_name_split = strsplit(image_name, '.');
             imwrite(cut, char(strcat(mainDir, 'patches\', type, subDirs{i}, '\', image_name_split{1}, '-', num2str(x), '.bmp')));
         end
-        disp(sprintf("index: %d, img#: %d, counter: %d, type: %s", i,k,counter
-        ,type))
+        disp(sprintf("index: %d, img#: %d, counter: %d, type: %s", i,k,counter,type))
         counter  = counter +  1;
     end
     
