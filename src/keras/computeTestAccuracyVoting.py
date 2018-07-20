@@ -1,32 +1,24 @@
 # Computing average accuracy on cropped patch (240 x 240) and full-sized image after voting
 # This file can also be modified for other patch sizes, i.e., 180 x 180, 120 x 120, etc. 
 
+from __future__ import print_function
+import keras
+from keras import backend as K
+from keras.preprocessing.image import *
+from keras.models import Sequential, load_model
+from PIL import Image
 import numpy as np
-import sys,os,caffe
 
-caffe_root = ''  # the root of caffe
-kProjectRoot = ''  # the directory includes trained caffemodel and deploy.prototxt
-kDataRoot = ''  # the directory includes file of the mean value of training data 
-kCaffeModelName = ''  # the trained caffemodel name
-kPrcgNum = 200  # the number of cg images
+def load_image(fname) :
+    img = Image.open(fname)
+    img.load()
+    data = np.asarray( img, dtype="int32" )
+    data = data[0:233,0:233,:]
+    return data.reshape((1,) + data.shape)
 
-sys.path.insert(0, caffe_root + 'python')
-os.chdir(caffe_root)
-if not os.path.isfile(caffe_root + kProjectRoot+ kCaffeModelName):
-    print("caffemodel is not exist...")
-
-caffe.set_device(1)
-caffe.set_mode_gpu()
-
-model_def = caffe_root + kProjectRoot + 'deploy.prototxt'
-model_weights = caffe_root + kProjectRoot + kCaffeModelName
-mu = np.load(caffe_root + kDataRoot + 'imagenet_mean.npy')
-mu = mu.mean(1).mean(1)  # average over pixels to obtain the mean (BGR) pixel values
-print('mean-subtracted values:', zip('BGR', mu))
-
-net = caffe.Classifier(model_def, model_weights, image_dims=(240, 240),
-                    mean=mu, raw_scale=255,
-                    channel_swap=(2,1,0))
+model = load_model('../../models/NIvsCG_model_20epochs_None-NoneStep.h5')
+test_dir = "../../datasets/patches/test-majority_voting/"
+kPrcgNum = 160
 
 imageLabel = []
 testLabel = []
@@ -45,17 +37,16 @@ oriTestLabel = []  # one dimension list
 # ...
 
 # Note that, [1] and [2] need to be refined for your own data
-testImageDir = caffe_root + 'data/columbia-prcg-datasets/test240_30_num.txt'  # [1]the info of test image patch
+testImageDir = test_dir + 'filenames.txt'  # [1]the info of test image patch
 testImageFile = open(testImageDir, 'r')
 for line in testImageFile:
     twoTuple = line.split()
     if len(twoTuple) == 2:
-        image = caffe.io.load_image(caffe_root + 'data/columbia-prcg-datasets/test_images_240_30/' + twoTuple[0])  # [2]the test image dir
+        image = load_image(test_dir + 'all/' + twoTuple[0])  # [2]the test image dir
         imageTmp.append(int(twoTuple[1]))
-        output = net.predict([image], oversample=True)
+        output = model.predict([image], batch_size = 1)
         output_prob = output[0]
         testTmp.append(output_prob.argmax())
-
     else:
         oriImageLabel.extend(imageTmp)
         oriTestLabel.extend(testTmp)
@@ -63,7 +54,7 @@ for line in testImageFile:
         testLabel.append(testTmp)
         imageTmp = []
         testTmp = []
-        
+
 testImageFile.close()
 
 print('The number of full-sized testing images is:', len(imageLabel))
@@ -76,11 +67,11 @@ testLabelNp = np.array(testLabel)
 #  Computing average accuracy on patches
 result = np.array(oriImageLabel) == np.array(oriTestLabel)
 
-prcg_result = result[:kPrcgNum*30]
-google_result = result[kPrcgNum*30:]
+prcg_result = result[:kPrcgNum*200]
+google_result = result[kPrcgNum*200:]
 print('The number of patches:', len(oriImageLabel), len(prcg_result), len(google_result))
 print('The average accuracy on patches:')
-print('The google (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
+print('The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
 print('The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
 print('CG patches misclassified as natural patches (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
 print('natural patches misclassified as CG patches (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
@@ -95,8 +86,26 @@ for x in range(len(imageLabel)):
 prcg_result = result[:kPrcgNum]
 google_result = result[kPrcgNum:]
 print('The average accuracy on full-sized images after majority voting: ', len(prcg_result), len(google_result))
-print('The google (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
+print('The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
 print('The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
 print('CG images misclassified as natural images (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
 print('natural images misclassified as CG images (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
 print('The average accuracy is:', result.sum()*1.0/len(result))
+
+'''
+The number of full-sized testing images is: 320
+The number of patches: 64000 32000 32000
+The average accuracy on patches:
+The personal (NI) accuracy is: 0.88109375
+The prcg (CG) accuracy is: 0.8310625
+CG patches misclassified as natural patches (CGmcNI) is: 0.1689375
+natural patches misclassified as CG patches (NImcCG) is: 0.11890625
+The average accuracy is: 0.856078125
+The average accuracy on full-sized images after majority voting:  160 160
+The personal (NI) accuracy is: 0.9375
+The prcg (CG) accuracy is: 0.9
+CG images misclassified as natural images (CGmcNI) is: 0.1
+natural images misclassified as CG images (NImcCG) is: 0.0625
+The average accuracy is: 0.91875
+
+'''

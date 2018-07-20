@@ -65,7 +65,7 @@ model.compile(loss='sparse_categorical_crossentropy',
               metrics=['accuracy'])
 
 # make the data generators for image data
-batch_size = 1
+batch_size = 32
 
 train_datagen = ImageDataGenerator()
 test_datagen = ImageDataGenerator()
@@ -82,22 +82,22 @@ validation_generator = test_datagen.flow_from_directory(
         batch_size=batch_size,
         class_mode='binary')
 
-# make callbacks to use while training
-tensorboard = LRTensorBoard(log_dir="logs/{}".format(time()))
-reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0)
-checkpoint = ModelCheckpoint("../../checkpoints/model.{epoch:02d}-{val_loss:.2f}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=3)
+# load trained model
+model = load_model('../../models/NIvsCG_model_20epochs_None-NoneStep.h5')
 
-# load trained model with 250 epochs, remove this line if training from scratch
-# model.load_weights('NIvsCG_model_250_epochs.h5')
+# make callbacks to use while training
+tensorboard = LRTensorBoard(log_dir="../../logs/{}".format(time()))
+reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.2, patience=5, min_lr=0)
+checkpoint = ModelCheckpoint("../../checkpoints/model_2/model.{epoch:02d}-{val_loss:.2f}.h5", monitor='val_loss', verbose=0, save_best_only=False, save_weights_only=False, mode='auto', period=4)
 
 # start training
 model.fit_generator(
         train_generator,
-        steps_per_epoch=2000,
-        epochs=20,
+        steps_per_epoch=None,
+        epochs=100,
         validation_data=validation_generator,
-        validation_steps=500,
+        validation_steps=None,
         callbacks=[tensorboard, reduce_lr, checkpoint])
 
-# save the weights if ever finish
-model.save('NIvsCG_model_1_20epochs_2000-500step.h5') 
+# save the model if ever finish
+model.save('../../models/NIvsCG_model_100epochs_None-NoneStep.h5') 
