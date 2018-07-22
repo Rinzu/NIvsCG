@@ -1,0 +1,12 @@
+The average accuracy on patches:
+-The personal (NI) accuracy is: 0.88109375
+-The prcg (CG) accuracy is: 0.8310625
+-CG patches misclassified as natural patches (CGmcNI) is: 0.1689375
+-natural patches misclassified as CG patches (NImcCG) is: 0.11890625
+-The average accuracy is: 0.856078125
+The average accuracy on full-sized images after majority voting:  
+-The personal (NI) accuracy is: 0.9375
+-The prcg (CG) accuracy is: 0.9
+-CG images misclassified as natural images (CGmcNI) is: 0.1
+-natural images misclassified as CG images (NImcCG) is: 0.0625
+-The average accuracy is: 0.91875

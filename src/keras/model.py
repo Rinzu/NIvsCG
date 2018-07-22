@@ -24,7 +24,7 @@ class LRTensorBoard(TensorBoard):
 model = Sequential()
 
 # convLayer
-model.add(Conv2D(32, (7, 7), input_shape=(233, 233, 3), kernel_regularizer=regularizers.l1(0.01)))
+model.add(Conv2D(32, (7, 7), input_shape=(233, 233, 3), kernel_regularizer=regularizers.l1(0.015)))
 
 # C1
 model.add(Conv2D(64, (7, 7)))
@@ -57,7 +57,7 @@ model.add(Dropout(0.5))
 model.add(Dense(2, activation='softmax'))
 
 # optimizer
-adam = optimizers.Adam(lr=1e-5)
+adam = optimizers.Adam(lr=2e-5)
 
 # loss function is binary crossentropy (for binary classification)
 model.compile(loss='sparse_categorical_crossentropy',

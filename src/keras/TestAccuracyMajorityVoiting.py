@@ -16,7 +16,7 @@ def load_image(fname) :
     data = data[0:233,0:233,:]
     return data.reshape((1,) + data.shape)
 
-model = load_model('../../models/NIvsCG_model_20epochs_None-NoneStep.h5')
+model = load_model('../../checkpoints/model_2/model.08-0.67.h5')
 test_dir = "../../datasets/patches/test-majority_voting/"
 kPrcgNum = 160
 
@@ -85,7 +85,7 @@ for x in range(len(imageLabel)):
 
 prcg_result = result[:kPrcgNum]
 google_result = result[kPrcgNum:]
-print('The average accuracy on full-sized images after majority voting: ', len(prcg_result), len(google_result))
+print('\nThe average accuracy on full-sized images after majority voting: ', len(prcg_result), len(google_result))
 print('The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
 print('The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
 print('CG images misclassified as natural images (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))

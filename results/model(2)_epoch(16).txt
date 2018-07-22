@@ -1,0 +1,15 @@
+The number of full-sized testing images is: 320
+The number of patches: 64000 32000 32000
+The average accuracy on patches:
+The personal (NI) accuracy is: 0.87990625
+The prcg (CG) accuracy is: 0.86803125
+CG patches misclassified as natural patches (CGmcNI) is: 0.13196875
+natural patches misclassified as CG patches (NImcCG) is: 0.12009375
+The average accuracy is: 0.87396875
+The average accuracy on full-sized images after majority voting:  160 160
+The personal (NI) accuracy is: 0.96875
+The prcg (CG) accuracy is: 0.925
+CG images misclassified as natural images (CGmcNI) is: 0.075
+natural images misclassified as CG images (NImcCG) is: 0.03125
+The average accuracy is: 0.946875
+
