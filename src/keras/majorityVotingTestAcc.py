@@ -57,8 +57,6 @@ for line in testImageFile:
 
 testImageFile.close()
 
-print('The number of full-sized testing images is:', len(imageLabel))
-
 imageCropNum = [len(x) for x in imageLabel]
 imageCropNumNp = np.array(imageCropNum)
 imageLabelNp = np.array(imageLabel)
@@ -69,13 +67,13 @@ result = np.array(oriImageLabel) == np.array(oriTestLabel)
 
 prcg_result = result[:kPrcgNum*200]
 google_result = result[kPrcgNum*200:]
-print('The number of patches:', len(oriImageLabel), len(prcg_result), len(google_result))
-print('The average accuracy on patches:')
-print('The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
-print('The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
-print('CG patches misclassified as natural patches (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
-print('natural patches misclassified as CG patches (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
-print('The average accuracy is:', result.sum()*1.0/len(result))
+print('The number of patches: %d (%d PCRG, %d personal)' % (len(oriImageLabel), len(prcg_result), len(google_result)))
+print('Accuracy on Patches:')
+print('-The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
+print('-The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
+print('-CG patches misclassified as natural patches (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
+print('-natural patches misclassified as CG patches (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
+print('-The average accuracy is:', result.sum()*1.0/len(result))
 
 #  Computing average accuracy on full-sized images (29 patches and majority voting)
 result = np.arange(len(imageLabel))
@@ -85,12 +83,13 @@ for x in range(len(imageLabel)):
 
 prcg_result = result[:kPrcgNum]
 google_result = result[kPrcgNum:]
-print('\nThe average accuracy on full-sized images after majority voting: ', len(prcg_result), len(google_result))
-print('The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
-print('The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
-print('CG images misclassified as natural images (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
-print('natural images misclassified as CG images (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
-print('The average accuracy is:', result.sum()*1.0/len(result))
+print('\nThe number of full-sized testing images is: %d (%d PCRG, %d personal)' % (len(imageLabel), len(prcg_result), len(google_result)))
+print('The average accuracy on full-sized images after majority voting:')
+print('-The personal (NI) accuracy is:', google_result.sum()*1.0/len(google_result))
+print('-The prcg (CG) accuracy is:', prcg_result.sum()*1.0/len(prcg_result))
+print('-CG images misclassified as natural images (CGmcNI) is:', (len(prcg_result) - prcg_result.sum())*1.0/len(prcg_result))
+print('-natural images misclassified as CG images (NImcCG) is:', (len(google_result) - google_result.sum())*1.0/len(google_result))
+print('-The average accuracy is:', result.sum()*1.0/len(result))
 
 '''
 The number of full-sized testing images is: 320
